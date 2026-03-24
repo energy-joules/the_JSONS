@@ -54,7 +54,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="cta-section py-5 text-center">
+      <section className="end-section py-5 text-center">
         <div className="container">
           <h2 className="fw-semibold mb-3">Ready to Get Started?</h2>
 

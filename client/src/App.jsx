@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 
 import Home from "./pages/home";
@@ -8,8 +8,12 @@ import Account from "./pages/account";
 import Footer from "./components/footer";
 
 function App() {
+  const location = useLocation();
+  const hideFooterRoutes = ["/map"];
+  const hideFooter = hideFooterRoutes.includes(location.pathname);
+
   return (
-    <BrowserRouter>
+    <>
       <Navbar />
 
       <main>
@@ -21,8 +25,8 @@ function App() {
         </Routes>
       </main>
 
-      <Footer />
-    </BrowserRouter>
+      {!hideFooter && <Footer />}
+    </>
   );
 }
 
