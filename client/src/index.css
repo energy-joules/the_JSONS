@@ -1,4 +1,5 @@
 body {
+    margin: 0;
     font-family: Arial, Helvetica, sans-serif;
     background-color: #f4f4f4;
     color: #111111;
@@ -28,7 +29,6 @@ a {
 }
 
 /* homepage */
-
 .home-page h1 {
     line-height: 1.1;
 }
@@ -64,7 +64,7 @@ a {
 }
 
 .features-section {
-    background-color: #e0e3e5;
+    background-color: #e1e5e6;
     border-top: 1px solid #cad0d3;
     border-bottom: 1px solid #cad0d3;
 }
@@ -74,11 +74,11 @@ a {
     margin: 0 auto;
 }
 
-.cta-section h2 {
+.end-section h2 {
     font-size: 32px;
 }
 
-.cta-section p {
+.end-section p {
     max-width: 600px;
     margin: 0 auto;
 }
@@ -103,7 +103,7 @@ a {
     margin: 0 auto;
 }
 
-.search-panel {
+.search-panel, .result-item {
     background-color: #ffffff;
     border: 1px solid #cad0d3;
     border-radius: 16px;
@@ -112,13 +112,6 @@ a {
 
 .results-list {
     margin-top: 20px;
-}
-
-.result-item {
-    background-color: #ffffff;
-    border: 1px solid #cad0d3;
-    border-radius: 16px;
-    padding: 24px;
 }
 
 .result-item + .result-item {
@@ -205,7 +198,7 @@ a {
 }
 
 .map-result-card {
-    background-color: #eceff1;
+    background-color: #e1e5e6;
     border: 1px solid #cad0d3;
     border-radius: 24px;
     padding: 20px;
@@ -232,7 +225,7 @@ a {
         linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
     background-size: 32px 32px;
-    background-color: #dde3e7;
+    background-color: #e1e5e6;
 }
 
 .map-placeholder-inner {
@@ -276,6 +269,81 @@ a {
 
     .map-placeholder {
         min-height: 500px;
+    }
+}
+
+/* account page */
+.account-page {
+    min-height: 100vh;
+}
+
+.account-header {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.account-subtext {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.account-info-card,
+.completed-card {
+    background-color: #ffffff;
+    border: 1px solid #cad0d3;
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.account-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #5f6367;
+}
+
+.completed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.certificate-placeholder {
+    background-color: #e1e5e6;
+    border: 1px solid #cad0d3;
+    border-radius: 12px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5f6367;
+}
+
+.account-summary-card {
+    background-color: #e1e5e6;
+    border: 1px solid #cad0d3;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+}
+
+.account-hours {
+    font-size: 40px;
+    font-weight: 700;
+    color: #111111;
+}
+
+@media (max-width: 767px) {
+    .account-page h1 {
+        font-size: 36px;
+    }
+
+    .account-info-card,
+    .completed-card {
+        padding: 18px;
+    }
+
+    .certificate-placeholder {
+        min-height: 100px;
     }
 }
 
