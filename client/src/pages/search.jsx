@@ -1,25 +1,27 @@
-import { useMemo, useState } from "react";
-import exampleEvents from "../data/exampleEvents";
-import searchEvents from "../utils/searchEvents";
+import { useState } from "react";
+import { getEvents, searchEventsApi } from "../api/eventsApi";
 
 function Search() {
   const [searchInput, setSearchInput] = useState("");
   const [categoryInput, setCategoryInput] = useState("all");
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [appliedSearch, setAppliedSearch] = useState("");
-  const [appliedCategory, setAppliedCategory] = useState("all");
-
-  // when you press search, applies filters
-  function handleSearch(event) {
+  async function handleSearch(event) {
     event.preventDefault();
-    setAppliedSearch(searchInput);
-    setAppliedCategory(categoryInput);
+    setLoading(true);
+    setError(null);
+    try {
+      const q = searchInput.trim();
+      const data = q ? await searchEventsApi(q) : await getEvents();
+      setResults(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
-
-  // filters the shared event data
-  const filteredResults = useMemo(() => {
-    return searchEvents(exampleEvents, appliedSearch, appliedCategory);
-  }, [appliedSearch, appliedCategory]);
 
   return (
     <main className="search-page">
@@ -69,34 +71,42 @@ function Search() {
           <div className="search-divider"></div>
 
           <div className="results-list">
-            {filteredResults.length === 0 ? (
-              <p className="text-center text-secondary">No results found.</p>
-            ) : (
-              filteredResults.map((event) => (
-                <div key={event.eventId} className="result-item">
-                  <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-3">
-                    <div>
-                      <h3 className="fw-bold mb-2">{event.name}</h3>
-                      <p className="text-secondary mb-1">
-                        {event.location} · {event.date} · {event.duration}
-                      </p>
-                      <p className="text-secondary mb-0">{event.address}</p>
-                    </div>
+            {loading && (
+              <p className="text-center text-secondary">Loading...</p>
+            )}
 
-                    <div className="result-meta text-md-end">
-                      <p className="mb-1">
-                        <strong>Spots:</strong> {event.currentPeople}/{event.maxPeople}
-                      </p>
-                      <p className="mb-0">
-                        <strong>Organization ID:</strong> {event.organizationId}
-                      </p>
-                    </div>
+            {error && (
+              <p className="text-center text-danger">{error}</p>
+            )}
+
+            {!loading && !error && results.length === 0 && (
+              <p className="text-center text-secondary">No results found.</p>
+            )}
+
+            {!loading && !error && results.map((event) => (
+              <div key={event._id ?? event.eventId} className="result-item">
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-3">
+                  <div>
+                    <h3 className="fw-bold mb-2">{event.name}</h3>
+                    <p className="text-secondary mb-1">
+                      {event.location} · {event.date} · {event.duration}
+                    </p>
+                    <p className="text-secondary mb-0">{event.address}</p>
                   </div>
 
-                  <p className="mb-0">{event.description}</p>
+                  <div className="result-meta text-md-end">
+                    <p className="mb-1">
+                      <strong>Spots:</strong> {event.currentPeople}/{event.maxPeople}
+                    </p>
+                    <p className="mb-0">
+                      <strong>Organization ID:</strong> {event.organizationId}
+                    </p>
+                  </div>
                 </div>
-              ))
-            )}
+
+                <p className="mb-0">{event.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
