@@ -5,7 +5,7 @@ import Home from "./pages/home";
 import Search from "./pages/search";
 import MapPage from "./pages/mapPage";
 import Account from "./pages/account";
-import Footer from "./components/footer";
+import Footer from "./components/Footer";
 
 function App() {
   const location = useLocation();
