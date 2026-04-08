@@ -1,2 +1,2 @@
-MONGODB_URI=your_mongodb_connection_string_here
+MONGODB_URI= //mongodb string here. just copy paste it here
 PORT=9000
