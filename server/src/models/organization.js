@@ -30,7 +30,7 @@ const organizationSchema = new mongoose.Schema({
         type: String
     },
     verified: {
-        type: Boolean.apply,
+        type: Boolean,
         required: true
     }
 

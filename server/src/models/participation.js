@@ -2,14 +2,12 @@ const mongoose = require('mongoose');
 
 const participationSchema = new mongoose.Schema({
     volunteerID: {
-        type: ObjectId,
-        required: true,
-        unique: true
+        type: mongoose.Schema.Types.ObjectId,
+        required: true, ref: 'Volunteer'
     },
     eventID: {
-        type: ObjectId,
-        required: true,
-        unique: true
+        type: mongoose.Schema.Types.ObjectId,
+        required: true, ref: 'Event'
     },
     status: {
         type: Boolean,

@@ -2,20 +2,19 @@ const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema({
     organizationID: {
-        type: ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
-        unique: true
     },
     name: {
         type: String,
         required: true
     },
     longitude: {
-        type: String,
+        type: Number,
         required: true
     },
     latitude: {
-        type: String,
+        type: Number,
         required: true
     },
     description: {
