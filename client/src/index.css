@@ -202,6 +202,17 @@ a {
     border: 1px solid #cad0d3;
     border-radius: 24px;
     padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.map-result-card:hover {
+    border-color: #999;
+}
+
+.map-result-card--active {
+    background-color: #d4d8da;
+    border-color: #111111;
 }
 
 .map-distance {
