@@ -12,6 +12,7 @@ a {
 
 /* login page */
 
+
 .login-page {
   min-height: 100vh;
   background-color: #f8f9fa;
@@ -119,6 +120,23 @@ a {
   font-size: 15px;
   font-weight: 600;
   text-decoration: underline;
+}
+
+.login-error-text {
+    min-height: 20px;
+    margin-top: 6px;
+    font-size: 14px;
+    color: #dc3545;
+    line-height: 1.4;
+}
+
+.input-error {
+    border-color: #dc3545;
+}
+
+.input-error:focus {
+    border-color: #dc3545;
+    box-shadow: none;
 }
 
 @media (max-width: 767px) {
