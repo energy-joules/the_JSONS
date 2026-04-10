@@ -7,6 +7,9 @@ const Event = require('./models/event');
 async function main() {
   await connectDB();
 
+  const cleared = await Event.deleteMany({});
+  console.log(`Cleared ${cleared.deletedCount} existing event(s).`);
+
   const now = new Date();
   const fakeOrgId = new mongoose.Types.ObjectId();
 
@@ -20,7 +23,9 @@ async function main() {
       address: '1555 Inner Rd, Gainesville, FL 32611',
       date: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
       duration: 2,
-      status: true,
+      maxPeople: 30,
+      currentPeople: 0,
+      status: 'active',
     },
     {
       organizationID: fakeOrgId,
@@ -31,7 +36,9 @@ async function main() {
       address: '111 SE 1st Ave, Gainesville, FL 32601',
       date: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
       duration: 3,
-      status: true,
+      maxPeople: 20,
+      currentPeople: 0,
+      status: 'active',
     },
     {
       organizationID: new mongoose.Types.ObjectId(),
@@ -42,7 +49,9 @@ async function main() {
       address: '874 SE 4th St, Gainesville, FL 32601',
       date: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000),
       duration: 4,
-      status: true,
+      maxPeople: 25,
+      currentPeople: 0,
+      status: 'active',
     },
     {
       organizationID: new mongoose.Types.ObjectId(),
@@ -53,7 +62,9 @@ async function main() {
       address: '1001 NW 34th St, Gainesville, FL 32605',
       date: new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000),
       duration: 2,
-      status: true,
+      maxPeople: 15,
+      currentPeople: 0,
+      status: 'active',
     },
     {
       organizationID: fakeOrgId,
@@ -64,7 +75,9 @@ async function main() {
       address: '3870 NW 17th Pl, Gainesville, FL 32605',
       date: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000),
       duration: 1.5,
-      status: true,
+      maxPeople: 10,
+      currentPeople: 0,
+      status: 'active',
     },
   ];
 

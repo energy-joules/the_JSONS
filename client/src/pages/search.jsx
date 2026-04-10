@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { getEvents, searchEventsApi } from "../api/eventsApi";
 
+function formatEventDate(raw) {
+  if (!raw) return "";
+  const d = new Date(raw);
+  return d.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 function Search() {
   const [searchInput, setSearchInput] = useState("");
   const [categoryInput, setCategoryInput] = useState("all");
@@ -30,7 +40,7 @@ function Search() {
           <div className="search-header text-center mb-5">
             <h1 className="fw-bold mb-3">Find Volunteer Opportunities</h1>
             <p className="search-subtext text-secondary">
-              Search for local opportunities and filter by category.
+              Search local volunteer opportunities by event name.
             </p>
           </div>
 
@@ -40,7 +50,7 @@ function Search() {
                 <input
                   type="text"
                   className="form-control form-control-lg"
-                  placeholder="Search by name, description, location, or address"
+                  placeholder="Search by event name"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                 />
@@ -89,22 +99,28 @@ function Search() {
                   <div>
                     <h3 className="fw-bold mb-2">{event.name}</h3>
                     <p className="text-secondary mb-1">
-                      {event.location} · {event.date} · {event.duration}
+                      {formatEventDate(event.date)}
+                      {event.duration != null ? ` · ${event.duration}h` : ""}
                     </p>
                     <p className="text-secondary mb-0">{event.address}</p>
                   </div>
 
                   <div className="result-meta text-md-end">
-                    <p className="mb-1">
-                      <strong>Spots:</strong> {event.currentPeople}/{event.maxPeople}
-                    </p>
                     <p className="mb-0">
-                      <strong>Organization ID:</strong> {event.organizationId}
+                      <strong>Spots:</strong>{" "}
+                      {event.currentPeople ?? 0}
+                      {event.maxPeople != null ? `/${event.maxPeople}` : ""}
                     </p>
                   </div>
                 </div>
 
                 <p className="mb-0">{event.description}</p>
+
+                <div className="d-flex justify-content-end pt-3 mt-3 border-top">
+                  <button type="button" className="btn btn-dark btn-sm">
+                    Sign up
+                  </button>
+                </div>
               </div>
             ))}
           </div>

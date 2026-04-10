@@ -6,6 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const connectDB = require('./db');
+const Event = require('./models/event');
 
 const app = express();
 
@@ -26,12 +27,10 @@ app.get("/", (req, res) => {
 app.get('/events', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit ?? '50', 10) || 50, 200);
-    const docs = await mongoose.connection.db
-      .collection('events')
-      .find({})
+    const docs = await Event.find()
       .sort({ date: 1, createdAt: -1 })
       .limit(limit)
-      .toArray();
+      .lean();
     res.json(docs);
   } catch (err) {
     res.status(500).json({ ok: false, error: String(err?.message ?? err) });
@@ -50,14 +49,10 @@ app.get('/events/search', async (req, res) => {
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(escaped, 'i');
 
-    const docs = await mongoose.connection.db
-      .collection('events')
-      .find({
-        $or: [{ name: regex }, { description: regex }, { location: regex }, { categories: regex }],
-      })
+    const docs = await Event.find({ name: regex })
       .sort({ date: 1, createdAt: -1 })
       .limit(limit)
-      .toArray();
+      .lean();
 
     res.json({ ok: true, q, count: docs.length, results: docs });
   } catch (err) {

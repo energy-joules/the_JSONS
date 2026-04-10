@@ -148,6 +148,23 @@ function MapPage() {
                   <p className="mb-1">{ev.address}</p>
 
                   <p className="mb-0 text-secondary">{ev.description}</p>
+
+                  <div className="pt-2 mt-2 border-top border-light">
+                    <p className="mb-2 small">
+                      <strong>Spots:</strong>{" "}
+                      {ev.currentPeople ?? 0}
+                      {ev.maxPeople != null ? `/${ev.maxPeople}` : ""}
+                    </p>
+                    <div className="d-flex justify-content-end">
+                      <button
+                        type="button"
+                        className="btn btn-dark btn-sm"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Sign up
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -200,7 +217,19 @@ function MapPage() {
                     <p className="mb-1 small text-secondary">
                       {formatDate(selectedEvent.date)} &middot; {selectedEvent.duration}h
                     </p>
-                    <p className="mb-0 small">{selectedEvent.address}</p>
+                    <p className="mb-2 small">{selectedEvent.address}</p>
+                    <div className="pt-2 border-top">
+                      <p className="mb-2 small">
+                        <strong>Spots:</strong>{" "}
+                        {selectedEvent.currentPeople ?? 0}
+                        {selectedEvent.maxPeople != null
+                          ? `/${selectedEvent.maxPeople}`
+                          : ""}
+                      </p>
+                      <button type="button" className="btn btn-dark btn-sm w-100">
+                        Sign up
+                      </button>
+                    </div>
                   </div>
                 </InfoWindowF>
               )}

@@ -3,19 +3,24 @@ const mongoose = require('mongoose');
 const participationSchema = new mongoose.Schema({
     volunteerID: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true, ref: 'Volunteer'
+        required: true,
+        ref: 'Volunteer'
     },
     eventID: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true, ref: 'Event'
+        required: true,
+        ref: 'Event'
     },
     status: {
-        type: Boolean,
-        required: true
+        type: String,
+        required: true,
+        enum: ['active', 'cancelled', 'completed'],
+        default: 'active'
     },
     hoursEarned: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     },
     arrivalTime: {
         type: Date,
@@ -29,6 +34,6 @@ const participationSchema = new mongoose.Schema({
         required: true
     }
 
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Participation", participationSchema);
