@@ -6,6 +6,18 @@ function Login() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    organizationName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    accountType: "Volunteer",
+    phone: "",
+  });
+
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    organizationName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -13,22 +25,48 @@ function Login() {
     phone: "",
   });
 
-  const [errors, setErrors] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    accountType: "",
-  });
+  const clearForm = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      organizationName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      accountType: "Volunteer",
+      phone: "",
+    });
+
+    setErrors({
+      firstName: "",
+      lastName: "",
+      organizationName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      accountType: "",
+      phone: "",
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData({
+    const updatedFormData = {
       ...formData,
       [name]: value,
-    });
+    };
+
+    if (name === "accountType") {
+      if (value === "organization") {
+        updatedFormData.firstName = "";
+        updatedFormData.lastName = "";
+      } else if (value === "volunteer") {
+        updatedFormData.organizationName = "";
+      }
+    }
+
+    setFormData(updatedFormData);
 
     setErrors({
       ...errors,
@@ -42,19 +80,13 @@ function Login() {
     const newErrors = {
       firstName: "",
       lastName: "",
+      organizationName: "",
       email: "",
       password: "",
       confirmPassword: "",
       accountType: "",
+      phone: "",
     };
-
-    if (isSignup && !formData.firstName.trim()) {
-      newErrors.firstName = "Please enter your first name.";
-    }
-
-    if (isSignup && !formData.lastName.trim()) {
-      newErrors.lastName = "Please enter your last name.";
-    }
 
     if (!formData.email.trim()) {
       newErrors.email = "Please enter your email.";
@@ -62,6 +94,30 @@ function Login() {
 
     if (!formData.password.trim()) {
       newErrors.password = "Please enter your password.";
+    }
+
+    if (isSignup && !formData.accountType) {
+      newErrors.accountType = "Please select an account type.";
+    }
+
+    if (isSignup && formData.accountType === "volunteer") {
+      if (!formData.firstName.trim()) {
+        newErrors.firstName = "Please enter your first name.";
+      }
+
+      if (!formData.lastName.trim()) {
+        newErrors.lastName = "Please enter your last name.";
+      }
+    }
+
+    if (isSignup && formData.accountType === "organization") {
+      if (!formData.organizationName.trim()) {
+        newErrors.organizationName = "Please enter your organization name.";
+      }
+
+      if (!formData.phone.trim()) {
+        newErrors.phone = "Please enter your phone number.";
+      }
     }
 
     if (isSignup && !formData.confirmPassword.trim()) {
@@ -77,10 +133,6 @@ function Login() {
       newErrors.confirmPassword = "Passwords do not match.";
     }
 
-    if (isSignup && !formData.accountType) {
-      newErrors.accountType = "Please select an account type.";
-    }
-
     const hasErrors = Object.values(newErrors).some((value) => value !== "");
 
     if (hasErrors) {
@@ -91,10 +143,12 @@ function Login() {
     setErrors({
       firstName: "",
       lastName: "",
+      organizationName: "",
       email: "",
       password: "",
       confirmPassword: "",
       accountType: "",
+      phone: "",
     });
 
     console.log("Form submitted:", formData);
@@ -138,25 +192,7 @@ function Login() {
                   className={`login-toggle-btn ${!isSignup ? "active" : ""}`}
                   onClick={() => {
                     setIsSignup(false);
-
-                    setFormData({
-                      firstName: "",
-                      lastName: "",
-                      email: "",
-                      password: "",
-                      confirmPassword: "",
-                      accountType: "",
-                      phone: "",
-                    });
-
-                    setErrors({
-                      firstName: "",
-                      lastName: "",
-                      email: "",
-                      password: "",
-                      confirmPassword: "",
-                      accountType: "",
-                    });
+                    clearForm();
                   }}
                 >
                   Log In
@@ -167,25 +203,7 @@ function Login() {
                   className={`login-toggle-btn ${isSignup ? "active" : ""}`}
                   onClick={() => {
                     setIsSignup(true);
-
-                    setFormData({
-                      firstName: "",
-                      lastName: "",
-                      email: "",
-                      password: "",
-                      confirmPassword: "",
-                      accountType: "",
-                      phone: "",
-                    });
-
-                    setErrors({
-                      firstName: "",
-                      lastName: "",
-                      email: "",
-                      password: "",
-                      confirmPassword: "",
-                      accountType: "",
-                    });
+                    clearForm();
                   }}
                 >
                   Sign Up
@@ -194,10 +212,35 @@ function Login() {
 
               <form className="login-form" onSubmit={handleSubmit} noValidate>
                 {isSignup && (
+                  <div className="mb-3">
+                    <label className="form-label login-label">
+                      Account Type*
+                    </label>
+
+                    <select
+                      id="accountType"
+                      name="accountType"
+                      className={`form-select login-input ${
+                        errors.accountType ? "input-error" : ""
+                      }`}
+                      value={formData.accountType}
+                      onChange={handleChange}
+                    >
+                      <option value="volunteer">Volunteer</option>
+                      <option value="organization">Organization</option>
+                    </select>
+
+                    <div id="accountType-error" className="login-error-text">
+                      {errors.accountType}
+                    </div>
+                  </div>
+                )}
+
+                {isSignup && formData.accountType === "volunteer" && (
                   <div className="row">
                     <div className="col-12 col-md-6">
                       <div className="mb-2">
-                        <label htmlFor="firstName" className="form-label login-label">
+                        <label className="form-label login-label">
                           First Name*
                         </label>
                         <input
@@ -210,16 +253,8 @@ function Login() {
                           placeholder="Enter your first name"
                           value={formData.firstName}
                           onChange={handleChange}
-                          aria-invalid={errors.firstName ? "true" : "false"}
-                          aria-describedby={
-                            errors.firstName ? "firstName-error" : undefined
-                          }
                         />
-                        <div
-                          id="firstName-error"
-                          className="login-error-text"
-                          aria-live="polite"
-                        >
+                        <div id="firstName-error" className="login-error-text">
                           {errors.firstName}
                         </div>
                       </div>
@@ -227,7 +262,7 @@ function Login() {
 
                     <div className="col-12 col-md-6">
                       <div className="mb-2">
-                        <label htmlFor="lastName" className="form-label login-label">
+                        <label className="form-label login-label">
                           Last Name*
                         </label>
                         <input
@@ -240,16 +275,8 @@ function Login() {
                           placeholder="Enter your last name"
                           value={formData.lastName}
                           onChange={handleChange}
-                          aria-invalid={errors.lastName ? "true" : "false"}
-                          aria-describedby={
-                            errors.lastName ? "lastName-error" : undefined
-                          }
                         />
-                        <div
-                          id="lastName-error"
-                          className="login-error-text"
-                          aria-live="polite"
-                        >
+                        <div id="lastName-error" className="login-error-text">
                           {errors.lastName}
                         </div>
                       </div>
@@ -257,8 +284,30 @@ function Login() {
                   </div>
                 )}
 
+                {isSignup && formData.accountType === "organization" && (
+                  <div className="mb-2">
+                    <label className="form-label login-label">
+                      Organization Name*
+                    </label>
+                    <input
+                      id="organizationName"
+                      name="organizationName"
+                      type="text"
+                      className={`form-control login-input ${
+                        errors.organizationName ? "input-error" : ""
+                      }`}
+                      placeholder="Enter your organization name"
+                      value={formData.organizationName}
+                      onChange={handleChange}
+                    />
+                    <div id="organizationName-error" className="login-error-text">
+                      {errors.organizationName}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mb-2">
-                  <label htmlFor="email" className="form-label login-label">
+                  <label className="form-label login-label">
                     Email{isSignup ? "*" : ""}
                   </label>
                   <input
@@ -271,37 +320,38 @@ function Login() {
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleChange}
-                    aria-invalid={errors.email ? "true" : "false"}
-                    aria-describedby={errors.email ? "email-error" : undefined}
                   />
-                  <div
-                    id="email-error"
-                    className="login-error-text"
-                    aria-live="polite"
-                  >
+                  <div id="email-error" className="login-error-text">
                     {errors.email}
                   </div>
                 </div>
 
                 {isSignup && (
-                    <div className="mb-4">
-                        <label htmlFor="phone" className="form-label login-label">
-                        Phone (optional)
-                        </label>
-                        <input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        className="form-control login-input"
-                        placeholder="Enter your phone number"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        />
+                  <div className="mb-4">
+                    <label className="form-label login-label">
+                      {formData.accountType === "organization"
+                        ? "Phone*"
+                        : "Phone (optional)"}
+                    </label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      className={`form-control login-input ${
+                        errors.phone ? "input-error" : ""
+                      }`}
+                      placeholder="Enter your phone number"
+                      value={formData.phone}
+                      onChange={handleChange}
+                    />
+                    <div id="phone-error" className="login-error-text">
+                      {errors.phone}
                     </div>
+                  </div>
                 )}
 
                 <div className="mb-2">
-                  <label htmlFor="password" className="form-label login-label">
+                  <label className="form-label login-label">
                     Password{isSignup ? "*" : ""}
                   </label>
                   <input
@@ -314,91 +364,35 @@ function Login() {
                     placeholder={isSignup ? "Create a password" : "Enter your password"}
                     value={formData.password}
                     onChange={handleChange}
-                    aria-invalid={errors.password ? "true" : "false"}
-                    aria-describedby={errors.password ? "password-error" : undefined}
                   />
-                  <div
-                    id="password-error"
-                    className="login-error-text"
-                    aria-live="polite"
-                  >
+                  <div id="password-error" className="login-error-text">
                     {errors.password}
                   </div>
                 </div>
 
                 {isSignup && (
-                  <>
-                    <div className="mb-2">
-                      <label
-                        htmlFor="confirmPassword"
-                        className="form-label login-label"
-                      >
-                        Confirm Password*
-                      </label>
-                      <input
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        type="password"
-                        className={`form-control login-input ${
-                          errors.confirmPassword ? "input-error" : ""
-                        }`}
-                        placeholder="Confirm your password"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        aria-invalid={errors.confirmPassword ? "true" : "false"}
-                        aria-describedby={
-                          errors.confirmPassword
-                            ? "confirmPassword-error"
-                            : undefined
-                        }
-                      />
-                      <div
-                        id="confirmPassword-error"
-                        className="login-error-text"
-                        aria-live="polite"
-                      >
-                        {errors.confirmPassword}
-                      </div>
+                  <div className="mb-2">
+                    <label className="form-label login-label">
+                      Confirm Password*
+                    </label>
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      className={`form-control login-input ${
+                        errors.confirmPassword ? "input-error" : ""
+                      }`}
+                      placeholder="Confirm your password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                    />
+                    <div id="confirmPassword-error" className="login-error-text">
+                      {errors.confirmPassword}
                     </div>
-
-                    <div className="mb-3">
-                      <label htmlFor="accountType" className="form-label login-label">
-                        Account Type*
-                      </label>
-
-                      <select
-                        id="accountType"
-                        name="accountType"
-                        className={`form-select login-input ${
-                          errors.accountType ? "input-error" : ""
-                        }`}
-                        value={formData.accountType}
-                        onChange={handleChange}
-                        aria-invalid={errors.accountType ? "true" : "false"}
-                        aria-describedby={
-                          errors.accountType ? "accountType-error" : undefined
-                        }
-                      >
-                        <option value="">Select account type</option>
-                        <option value="volunteer">Volunteer</option>
-                        <option value="organization">Organization</option>
-                      </select>
-
-                      <div
-                        id="accountType-error"
-                        className="login-error-text"
-                        aria-live="polite"
-                      >
-                        {errors.accountType}
-                      </div>
-                    </div>
-                  </>
+                  </div>
                 )}
 
-                <button
-                  type="submit"
-                  className="btn btn-dark btn-lg w-100 login-submit-btn"
-                >
+                <button type="submit" className="btn btn-dark btn-lg w-100 login-submit-btn">
                   {isSignup ? "Create Account" : "Log In"}
                 </button>
               </form>
@@ -415,25 +409,7 @@ function Login() {
                   className="login-switch-btn"
                   onClick={() => {
                     setIsSignup(!isSignup);
-
-                    setFormData({
-                      firstName: "",
-                      lastName: "",
-                      email: "",
-                      password: "",
-                      confirmPassword: "",
-                      accountType: "",
-                      phone: "",
-                    });
-
-                    setErrors({
-                      firstName: "",
-                      lastName: "",
-                      email: "",
-                      password: "",
-                      confirmPassword: "",
-                      accountType: "",
-                    });
+                    clearForm();
                   }}
                 >
                   {isSignup ? "Log In Instead" : "Sign Up Instead"}
