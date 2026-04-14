@@ -11,23 +11,23 @@ function Account() {
         eventName: "Event1",
         completedDate: "2026-03-10",
         hours: 3,
-        certificateImage: "Certificate Placeholder"
+        certificateImage: "Certificate Placeholder",
       },
       {
         id: 2,
         eventName: "Event2",
         completedDate: "2026-03-15",
         hours: 4,
-        certificateImage: "Certificate Placeholder"
+        certificateImage: "Certificate Placeholder",
       },
       {
         id: 3,
         eventName: "Event3",
         completedDate: "2026-03-20",
         hours: 2.5,
-        certificateImage: "Certificate Placeholder"
-      }
-    ]
+        certificateImage: "Certificate Placeholder",
+      },
+    ],
   };
 
   const totalHours = exampleUser.completedOpportunities.reduce(
@@ -87,9 +87,7 @@ function Account() {
 
             <div className="completed-list">
               {exampleUser.completedOpportunities.length === 0 ? (
-                <p className="text-secondary mb-0">
-                  No completed opportunities yet.
-                </p>
+                <p className="text-secondary mb-0">No completed opportunities yet.</p>
               ) : (
                 exampleUser.completedOpportunities.map((item) => (
                   <div key={item.id} className="completed-card">

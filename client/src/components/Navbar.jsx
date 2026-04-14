@@ -1,6 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthProvider";
 
 function Navbar() {
+  const navigate = useNavigate();
+  const { token, logout } = useAuth();
   const navbarClasses = ({ isActive }) =>
     isActive ? "nav-link active fw-semibold" : "nav-link";
 
@@ -30,6 +33,20 @@ function Navbar() {
             <NavLink to="/search" className={navbarClasses}>Search</NavLink>
             <NavLink to="/map" className={navbarClasses}>Map</NavLink>
             <NavLink to="/account" className={navbarClasses}>Account</NavLink>
+            {token ? (
+              <button
+                type="button"
+                className="nav-link btn btn-link p-0"
+                onClick={() => {
+                  logout();
+                  navigate("/login", { replace: true });
+                }}
+              >
+                Logout
+              </button>
+            ) : (
+              <NavLink to="/login" className={navbarClasses}>Login</NavLink>
+            )}
           </div>
         </div>
 
