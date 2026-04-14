@@ -1,9 +1,10 @@
 const mongoose = require('mongoose')
 
 const organizationSchema = new mongoose.Schema({
-    username: {
+    organizationName: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
     },
     password: { // needs to be hashed in the future
         type: String, 
@@ -21,7 +22,7 @@ const organizationSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        default: ""
     },
     categories: {
         type: [String]
@@ -30,12 +31,10 @@ const organizationSchema = new mongoose.Schema({
         type: String
     },
     verified: {
-        type: Boolean.apply,
-        required: true
+        type: Boolean,
+        default: false
     }
 
 });
-
-organizationSchema.index({ username: 1, password: 1}, { unique: true });
 
 module.exports = mongoose.model("Organization", organizationSchema);

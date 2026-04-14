@@ -6,6 +6,7 @@ import Search from "./pages/search";
 import MapPage from "./pages/mapPage";
 import Account from "./pages/account";
 import Footer from "./components/Footer";
+import RequireAuth from "./auth/RequireAuth";
 
 function App() {
   const location = useLocation();
@@ -26,7 +27,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/map" element={<MapPage />} />
-          <Route path="/account" element={<Account />} />
+          <Route
+            path="/account"
+            element={
+              <RequireAuth>
+                <Account />
+              </RequireAuth>
+            }
+          />
         </Routes>
       </main>
 

@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthProvider";
 
 function Login() {
   const [isSignup, setIsSignup] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { token, login, signup } = useAuth();
+  const [formError, setFormError] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -10,7 +16,7 @@ function Login() {
     email: "",
     password: "",
     confirmPassword: "",
-    accountType: "Volunteer",
+    accountType: "volunteer",
     phone: "",
   });
 
@@ -33,7 +39,7 @@ function Login() {
       email: "",
       password: "",
       confirmPassword: "",
-      accountType: "Volunteer",
+      accountType: "volunteer",
       phone: "",
     });
 
@@ -47,7 +53,15 @@ function Login() {
       accountType: "",
       phone: "",
     });
+
+    setFormError("");
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/account", { replace: true });
+    }
+  }, [token, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,9 +86,17 @@ function Login() {
       ...errors,
       [name]: "",
     });
+
+    setFormError("");
   };
 
-  const handleSubmit = (e) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isValidPhone = (input) => {
+    const digits = String(input || "").replace(/\D/g, "");
+    return digits.length >= 10 && digits.length <= 15;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = {
@@ -90,6 +112,8 @@ function Login() {
 
     if (!formData.email.trim()) {
       newErrors.email = "Please enter your email.";
+    } else if (!emailRegex.test(formData.email.trim())) {
+      newErrors.email = "Please enter a valid email.";
     }
 
     if (!formData.password.trim()) {
@@ -117,6 +141,14 @@ function Login() {
 
       if (!formData.phone.trim()) {
         newErrors.phone = "Please enter your phone number.";
+      } else if (!isValidPhone(formData.phone)) {
+        newErrors.phone = "Please enter a valid phone number.";
+      }
+    }
+
+    if (isSignup && formData.accountType === "volunteer" && formData.phone.trim()) {
+      if (!isValidPhone(formData.phone)) {
+        newErrors.phone = "Please enter a valid phone number.";
       }
     }
 
@@ -151,7 +183,31 @@ function Login() {
       phone: "",
     });
 
-    console.log("Form submitted:", formData);
+    try {
+      setFormError("");
+      if (isSignup) {
+        await signup({
+          accountType: formData.accountType,
+          email: formData.email.trim(),
+          password: formData.password,
+          firstName: formData.accountType === "volunteer" ? formData.firstName.trim() : undefined,
+          lastName: formData.accountType === "volunteer" ? formData.lastName.trim() : undefined,
+          organizationName:
+            formData.accountType === "organization" ? formData.organizationName.trim() : undefined,
+          phone: formData.phone.trim() || undefined,
+        });
+      } else {
+        await login({
+          email: formData.email.trim(),
+          password: formData.password,
+        });
+      }
+
+      const from = location.state?.from;
+      navigate(typeof from === "string" ? from : "/account", { replace: true });
+    } catch (err) {
+      setFormError(err?.message || "Something went wrong. Please try again.");
+    }
   };
 
   let subtext;
@@ -211,6 +267,11 @@ function Login() {
               </div>
 
               <form className="login-form" onSubmit={handleSubmit} noValidate>
+                {formError && (
+                  <div className="alert alert-danger mb-3" role="alert">
+                    {formError}
+                  </div>
+                )}
                 {isSignup && (
                   <div className="mb-3">
                     <label className="form-label login-label">
