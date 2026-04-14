@@ -10,6 +10,7 @@ const Volunteer = require("./models/volunteer");
 const Organization = require("./models/organization");
 const bcrypt = require("bcryptjs");
 const { signAuthToken, authRequired } = require("./auth");
+const Event = require('./models/event');
 
 const app = express();
 
@@ -186,12 +187,10 @@ app.get("/auth/me", authRequired, requireDb, async (req, res) => {
 app.get('/events', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit ?? '50', 10) || 50, 200);
-    const docs = await mongoose.connection.db
-      .collection('events')
-      .find({})
+    const docs = await Event.find()
       .sort({ date: 1, createdAt: -1 })
       .limit(limit)
-      .toArray();
+      .lean();
     res.json(docs);
   } catch (err) {
     res.status(500).json({ ok: false, error: String(err?.message ?? err) });
@@ -210,14 +209,10 @@ app.get('/events/search', async (req, res) => {
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(escaped, 'i');
 
-    const docs = await mongoose.connection.db
-      .collection('events')
-      .find({
-        $or: [{ name: regex }, { description: regex }, { location: regex }, { categories: regex }],
-      })
+    const docs = await Event.find({ name: regex })
       .sort({ date: 1, createdAt: -1 })
       .limit(limit)
-      .toArray();
+      .lean();
 
     res.json({ ok: true, q, count: docs.length, results: docs });
   } catch (err) {
