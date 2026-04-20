@@ -181,6 +181,8 @@ a {
 
 .home-page .lead {
     max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
     color: #5f6367;
 }
 
