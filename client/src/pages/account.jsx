@@ -202,7 +202,7 @@ function Account() {
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="Campus Cleanup"
+                        placeholder="event name..."
                       />
                     </div>
 
@@ -216,7 +216,7 @@ function Account() {
                       <textarea
                         className="form-control"
                         rows="4"
-                        placeholder="Help pick up litter and beautify the UF campus."
+                        placeholder="Add a description for your event..."
                       ></textarea>
                     </div>
 
@@ -227,7 +227,7 @@ function Account() {
                         min="0"
                         step="0.5"
                         className="form-control"
-                        placeholder="2"
+                        placeholder="0"
                       />
                     </div>
 
@@ -246,7 +246,7 @@ function Account() {
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="1555 Inner Rd, Gainesville, FL 32611"
+                        placeholder="123 St, Gainesville, FL 32611"
                       />
                     </div>
 
@@ -269,7 +269,7 @@ function Account() {
                       <input
                         type="email"
                         className="form-control"
-                        placeholder="john@example.com"
+                        placeholder="email@example.com"
                       />
                     </div>
 
@@ -278,7 +278,7 @@ function Account() {
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="Campus Cleanup"
+                        placeholder="event name..."
                       />
                     </div>
 
@@ -294,7 +294,7 @@ function Account() {
                         min="0"
                         step="0.5"
                         className="form-control"
-                        placeholder="2"
+                        placeholder="0"
                       />
                     </div>
 
