@@ -11,6 +11,7 @@ const Organization = require("./models/organization");
 const bcrypt = require("bcryptjs");
 const { signAuthToken, authRequired } = require("./auth");
 const Event = require('./models/event');
+const Participation = require('./models/participation');
 
 const app = express();
 
@@ -21,7 +22,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: "https://kindbridge-wmjo.onrender.com" || "http://localhost:5173",
+    origin: "https://kindbridge-wmjo.onrender.com",
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
@@ -217,6 +218,135 @@ app.get('/events/search', async (req, res) => {
     res.json({ ok: true, q, count: docs.length, results: docs });
   } catch (err) {
     res.status(500).json({ ok: false, error: String(err?.message ?? err) });
+  }
+});
+
+function requireAccountType(type) {
+  return (req, res, next) => {
+    if (req.user?.accountType !== type) {
+      return res.status(403).json({ ok: false, error: `Only ${type} accounts can perform this action.` });
+    }
+    next();
+  };
+}
+
+app.post('/events', authRequired, requireDb, requireAccountType('organization'), async (req, res) => {
+  try {
+    const name = String(req.body.name ?? '').trim();
+    const description = String(req.body.description ?? '').trim();
+    const address = String(req.body.address ?? '').trim();
+    const dateRaw = req.body.date;
+    const duration = Number(req.body.duration);
+    const latitude = Number(req.body.latitude);
+    const longitude = Number(req.body.longitude);
+    const maxPeopleRaw = req.body.maxPeople;
+
+    if (!name) return res.status(400).json({ ok: false, error: 'Event name is required.' });
+    if (!description) return res.status(400).json({ ok: false, error: 'Description is required.' });
+    if (!address) return res.status(400).json({ ok: false, error: 'Address is required.' });
+    if (!dateRaw) return res.status(400).json({ ok: false, error: 'Date is required.' });
+    const date = new Date(dateRaw);
+    if (Number.isNaN(date.getTime())) {
+      return res.status(400).json({ ok: false, error: 'Invalid date.' });
+    }
+    if (!Number.isFinite(duration) || duration < 0) {
+      return res.status(400).json({ ok: false, error: 'Duration must be a non-negative number.' });
+    }
+    if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) {
+      return res.status(400).json({ ok: false, error: 'Latitude must be between -90 and 90.' });
+    }
+    if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+      return res.status(400).json({ ok: false, error: 'Longitude must be between -180 and 180.' });
+    }
+
+    let maxPeople;
+    if (maxPeopleRaw !== undefined && maxPeopleRaw !== null && maxPeopleRaw !== '') {
+      maxPeople = Number(maxPeopleRaw);
+      if (!Number.isFinite(maxPeople) || maxPeople < 1) {
+        return res.status(400).json({ ok: false, error: 'Max people must be at least 1.' });
+      }
+    }
+
+    const event = await Event.create({
+      organizationID: req.user.sub,
+      name,
+      description,
+      address,
+      date,
+      duration,
+      latitude,
+      longitude,
+      ...(maxPeople !== undefined ? { maxPeople } : {}),
+    });
+
+    return res.json({ ok: true, event });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: String(err?.message ?? err) });
+  }
+});
+
+app.get('/events/mine', authRequired, requireDb, requireAccountType('organization'), async (req, res) => {
+  try {
+    const docs = await Event.find({ organizationID: req.user.sub })
+      .sort({ date: 1, createdAt: -1 })
+      .lean();
+    return res.json({ ok: true, events: docs });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: String(err?.message ?? err) });
+  }
+});
+
+app.post('/participations', authRequired, requireDb, requireAccountType('organization'), async (req, res) => {
+  try {
+    const volunteerEmail = String(req.body.volunteerEmail ?? '').trim().toLowerCase();
+    const eventName = String(req.body.eventName ?? '').trim();
+    const completionDateRaw = req.body.completionDate;
+    const hoursEarned = Number(req.body.hoursEarned);
+
+    if (!volunteerEmail) return res.status(400).json({ ok: false, error: 'Volunteer email is required.' });
+    if (!eventName) return res.status(400).json({ ok: false, error: 'Event name is required.' });
+    if (!completionDateRaw) return res.status(400).json({ ok: false, error: 'Completion date is required.' });
+    const completionDate = new Date(completionDateRaw);
+    if (Number.isNaN(completionDate.getTime())) {
+      return res.status(400).json({ ok: false, error: 'Invalid completion date.' });
+    }
+    if (!Number.isFinite(hoursEarned) || hoursEarned < 0) {
+      return res.status(400).json({ ok: false, error: 'Service hours must be a non-negative number.' });
+    }
+
+    const volunteer = await Volunteer.findOne({ email: volunteerEmail }).lean();
+    if (!volunteer) return res.status(404).json({ ok: false, error: 'Volunteer not found.' });
+
+    const event = await Event.findOne({ organizationID: req.user.sub, name: eventName }).lean();
+    if (!event) return res.status(404).json({ ok: false, error: 'Event not found for this organization.' });
+
+    const departureTime = new Date(completionDate.getTime() + hoursEarned * 3600 * 1000);
+
+    const participation = await Participation.create({
+      volunteerID: volunteer._id,
+      eventID: event._id,
+      status: 'completed',
+      hoursEarned,
+      arrivalTime: completionDate,
+      departureTime,
+      awaitingConfirmation: false,
+    });
+
+    return res.json({ ok: true, participation });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: String(err?.message ?? err) });
+  }
+});
+
+app.get('/participations/mine', authRequired, requireDb, requireAccountType('volunteer'), async (req, res) => {
+  try {
+    const docs = await Participation.find({ volunteerID: req.user.sub })
+      .sort({ arrivalTime: -1 })
+      .populate('eventID', 'name date')
+      .lean();
+    return res.json({ ok: true, participations: docs });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: String(err?.message ?? err) });
   }
 });
 

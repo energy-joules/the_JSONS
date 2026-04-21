@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from "@react-google-maps/api";
 import { getEvents, searchEventsApi } from "../api/eventsApi";
+import { GOOGLE_MAPS_LIBRARIES } from "../lib/googleMaps";
 
 const DEFAULT_CENTER = { lat: 29.6516, lng: -82.3248 };
 const MAP_CONTAINER_STYLE = { width: "100%", height: "100%" };
@@ -54,6 +55,7 @@ function MapPage() {
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? "",
+    libraries: GOOGLE_MAPS_LIBRARIES,
   });
 
   const onMapLoad = useCallback((map) => {
