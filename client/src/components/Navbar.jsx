@@ -30,9 +30,10 @@ function Navbar() {
         <div className="collapse navbar-collapse" id="main-navbar">
           <div className="navbar-nav ms-auto">
             <NavLink to="/" className={navbarClasses}>Home</NavLink>
-            <NavLink to="/search" className={navbarClasses}>Search</NavLink>
             <NavLink to="/map" className={navbarClasses}>Map</NavLink>
-            <NavLink to="/account" className={navbarClasses}>Profile</NavLink>
+            {token && (
+              <NavLink to="/account" className={navbarClasses}>Profile</NavLink>
+            )}
             {token ? (
               <button
                 type="button"

@@ -1,39 +1,39 @@
-function Account() {
-  const exampleUser = {
-    username: "lukeB",
-    firstName: "Luke",
-    lastName: "Barcenas",
-    email: "luke@gmail.com",
-    phone: "",
-    completedOpportunities: [
-      {
-        id: 1,
-        eventName: "Event1",
-        completedDate: "2026-03-10",
-        hours: 3,
-        certificateImage: "Certificate Placeholder",
-      },
-      {
-        id: 2,
-        eventName: "Event2",
-        completedDate: "2026-03-15",
-        hours: 4,
-        certificateImage: "Certificate Placeholder",
-      },
-      {
-        id: 3,
-        eventName: "Event3",
-        completedDate: "2026-03-20",
-        hours: 2.5,
-        certificateImage: "Certificate Placeholder",
-      },
-    ],
-  };
+import { useAuth } from "../auth/AuthProvider";
 
-  const totalHours = exampleUser.completedOpportunities.reduce(
+function Account() {
+  const { user, loading } = useAuth();
+
+  const completedOpportunities = [];
+  const totalHours = completedOpportunities.reduce(
     (sum, item) => sum + item.hours,
     0
   );
+
+  if (loading) {
+    return (
+      <main className="account-page">
+        <section className="py-5">
+          <div className="container">
+            <p className="text-center text-secondary">Loading...</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="account-page">
+        <section className="py-5">
+          <div className="container">
+            <p className="text-center text-secondary">You are not signed in.</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  const isOrganization = user.accountType === "organization";
 
   return (
     <main className="account-page">
@@ -46,73 +46,86 @@ function Account() {
             </p>
           </div>
 
-          <div className="account-summary-card mb-4">
-            <h2 className="fw-semibold mb-2">Total Volunteer Hours</h2>
-            <p className="account-hours mb-0">{totalHours}</p>
-          </div>
+          {!isOrganization && (
+            <div className="account-summary-card mb-4">
+              <h2 className="fw-semibold mb-2">Total Volunteer Hours</h2>
+              <p className="account-hours mb-0">{totalHours}</p>
+            </div>
+          )}
 
           <div className="account-info-card mb-5">
             <h2 className="fw-semibold mb-4">Profile Information</h2>
 
             <div className="row g-4">
-              <div className="col-12 col-md-6">
-                <p className="account-label mb-1">First Name</p>
-                <p className="mb-0">{exampleUser.firstName}</p>
-              </div>
+              {isOrganization ? (
+                <div className="col-12">
+                  <p className="account-label mb-1">Organization Name</p>
+                  <p className="mb-0">{user.organizationName || "N/A"}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="col-12 col-md-6">
+                    <p className="account-label mb-1">First Name</p>
+                    <p className="mb-0">{user.firstName || "N/A"}</p>
+                  </div>
 
-              <div className="col-12 col-md-6">
-                <p className="account-label mb-1">Last Name</p>
-                <p className="mb-0">{exampleUser.lastName}</p>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <p className="account-label mb-1">Username</p>
-                <p className="mb-0">{exampleUser.username}</p>
-              </div>
+                  <div className="col-12 col-md-6">
+                    <p className="account-label mb-1">Last Name</p>
+                    <p className="mb-0">{user.lastName || "N/A"}</p>
+                  </div>
+                </>
+              )}
 
               <div className="col-12 col-md-6">
                 <p className="account-label mb-1">Email</p>
-                <p className="mb-0">{exampleUser.email}</p>
+                <p className="mb-0">{user.email}</p>
               </div>
 
               <div className="col-12 col-md-6">
                 <p className="account-label mb-1">Phone</p>
-                <p className="mb-0">{exampleUser.phone || "N/A"}</p>
+                <p className="mb-0">{user.phone || "N/A"}</p>
+              </div>
+
+              <div className="col-12 col-md-6">
+                <p className="account-label mb-1">Account Type</p>
+                <p className="mb-0 text-capitalize">{user.accountType}</p>
               </div>
             </div>
           </div>
 
-          <div className="completed-section">
-            <h2 className="fw-semibold mb-4">Completed Opportunities</h2>
+          {!isOrganization && (
+            <div className="completed-section">
+              <h2 className="fw-semibold mb-4">Completed Opportunities</h2>
 
-            <div className="completed-list">
-              {exampleUser.completedOpportunities.length === 0 ? (
-                <p className="text-secondary mb-0">No completed opportunities yet.</p>
-              ) : (
-                exampleUser.completedOpportunities.map((item) => (
-                  <div key={item.id} className="completed-card">
-                    <div className="row g-4 align-items-center">
-                      <div className="col-12 col-md-8">
-                        <h3 className="fw-bold mb-2">{item.eventName}</h3>
-                        <p className="text-secondary mb-2">
-                          Completed on {item.completedDate}
-                        </p>
-                        <p className="mb-0">
-                          <strong>Hours Earned:</strong> {item.hours}
-                        </p>
-                      </div>
+              <div className="completed-list">
+                {completedOpportunities.length === 0 ? (
+                  <p className="text-secondary mb-0">No completed opportunities yet.</p>
+                ) : (
+                  completedOpportunities.map((item) => (
+                    <div key={item.id} className="completed-card">
+                      <div className="row g-4 align-items-center">
+                        <div className="col-12 col-md-8">
+                          <h3 className="fw-bold mb-2">{item.eventName}</h3>
+                          <p className="text-secondary mb-2">
+                            Completed on {item.completedDate}
+                          </p>
+                          <p className="mb-0">
+                            <strong>Hours Earned:</strong> {item.hours}
+                          </p>
+                        </div>
 
-                      <div className="col-12 col-md-4">
-                        <div className="certificate-placeholder">
-                          {item.certificateImage}
+                        <div className="col-12 col-md-4">
+                          <div className="certificate-placeholder">
+                            {item.certificateImage}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
     </main>

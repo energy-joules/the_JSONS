@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const volunteerSchema = new mongoose.Schema({
-    password: { // needs to be hashed in the future
+    password: {
         type: String,
         required: true
     },

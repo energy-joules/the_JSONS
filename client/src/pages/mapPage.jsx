@@ -4,6 +4,9 @@ import { getEvents, searchEventsApi } from "../api/eventsApi";
 
 const DEFAULT_CENTER = { lat: 29.6516, lng: -82.3248 };
 const MAP_CONTAINER_STYLE = { width: "100%", height: "100%" };
+const SIDEBAR_MIN_WIDTH = 280;
+const SIDEBAR_MAX_WIDTH = 720;
+const SIDEBAR_DEFAULT_WIDTH = 420;
 
 function MapPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -13,7 +16,41 @@ function MapPage() {
   const [error, setError] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(SIDEBAR_DEFAULT_WIDTH);
+  const isResizingRef = useRef(false);
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    function onMouseMove(e) {
+      if (!isResizingRef.current) return;
+      const next = Math.min(
+        SIDEBAR_MAX_WIDTH,
+        Math.max(SIDEBAR_MIN_WIDTH, e.clientX)
+      );
+      setSidebarWidth(next);
+    }
+    function onMouseUp() {
+      if (isResizingRef.current) {
+        isResizingRef.current = false;
+        document.body.style.cursor = "";
+        document.body.style.userSelect = "";
+      }
+    }
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
+
+  function startResize(e) {
+    e.preventDefault();
+    isResizingRef.current = true;
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  }
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? "",
@@ -79,7 +116,19 @@ function MapPage() {
   return (
     <main className="map-page">
       <section className="map-layout">
-        <aside className="map-sidebar">
+        <aside
+          className={`map-sidebar${sidebarCollapsed ? " map-sidebar--collapsed" : ""}`}
+          style={sidebarCollapsed ? undefined : { width: `${sidebarWidth}px` }}
+        >
+          <button
+            type="button"
+            className="map-sidebar-toggle"
+            onClick={() => setSidebarCollapsed((v) => !v)}
+            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {sidebarCollapsed ? "›" : "‹"}
+          </button>
           <div className="map-sidebar-inner">
             <div className="map-sidebar-header">
               <h1 className="fw-bold mb-3">
@@ -169,6 +218,15 @@ function MapPage() {
               ))}
             </div>
           </div>
+          {!sidebarCollapsed && (
+            <div
+              className="map-sidebar-resizer"
+              onMouseDown={startResize}
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize sidebar"
+            />
+          )}
         </aside>
 
         <div className="map-view">

@@ -7,7 +7,7 @@ const organizationSchema = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
-    password: { // needs to be hashed in the future
+    password: {
         type: String,
         required: true
     },

@@ -14,11 +14,11 @@ function Home() {
             or log in as an organization to post openings.
           </p>
 
-          <div className="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-5">
+          <div className="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-3">
             <Link
               to="/login"
               state={{ signup: true, accountType: "volunteer" }}
-              className="btn btn-dark btn-lg px-4"
+              className="btn btn-outline-dark btn-lg px-4"
             >
               I’m a Volunteer
             </Link>
@@ -29,6 +29,12 @@ function Home() {
               className="btn btn-outline-dark btn-lg px-4"
             >
               I’m an Organization
+            </Link>
+          </div>
+
+          <div className="d-flex justify-content-center mb-5">
+            <Link to="/map" className="btn btn-outline-dark btn-lg px-4">
+              Explore Opportunities
             </Link>
           </div>
         </div>
@@ -64,6 +70,7 @@ function Home() {
         </div>
       </section>
 
+
       <section className="end-section py-5 text-center">
         <div className="container">
           <h2 className="fw-semibold mb-3">Ready to Get Started?</h2>
@@ -72,8 +79,12 @@ function Home() {
             Join thousands of volunteers making a difference in their communities.
           </p>
 
-          <Link to="/search" className="btn btn-dark btn-lg px-4">
-            Explore Opportunities
+          <Link
+            to="/login"
+            state={{ signup: true }}
+            className="btn btn-dark btn-lg px-4"
+          >
+            Sign Up
           </Link>
         </div>
       </section>
