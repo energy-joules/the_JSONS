@@ -234,6 +234,39 @@ app.get('/health', (req, res) => {
 });
 
 // ...
+app.post('/events', requireDb, async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      date,
+      duration,
+      address,
+      maxPeople,
+      organizationId,
+    } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ ok: false, error: "Event name is required." });
+    }
+
+    const event = await Event.create({
+      name,
+      description,
+      date,
+      duration,
+      address,
+      maxPeople,
+      organizationId,
+      currentPeople: 0,
+      status: "active",
+    });
+
+    res.json({ ok: true, event });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: String(err.message) });
+  }
+});
 
 const port = process.env.PORT || 9000;
 

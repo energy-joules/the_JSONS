@@ -1,7 +1,52 @@
+import { useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
+import { apiFetch } from "../auth/auth";
 
 function Account() {
   const { user, loading } = useAuth();
+  const [eventName, setEventName] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [duration, setDuration] = useState("");
+  const [address, setAddress] = useState("");
+  const [maxPeople, setMaxPeople] = useState("");
+
+const handleCreateEvent = async (e) => {
+  e.preventDefault();
+
+  try {
+    await apiFetch("/events", {
+      method: "POST",
+      body: JSON.stringify({
+        name: eventName,
+        description,
+        date,
+        duration,
+        address,
+        maxPeople,
+        organizationID: user.id,
+
+        // temporary safety if backend requires them:
+        latitude: 0,
+        longitude: 0,
+      }),
+    });
+    console.log("payload:", {
+      name: eventName,
+      description,
+      date,
+      duration,
+      address,
+      maxPeople,
+      organizationID: user.id,
+      latitude: 0,
+      longitude: 0,
+    });
+    console.log("event created");
+  } catch (err) {
+    console.log("create event failed:", err.message);
+  }
+};
 
   const completedOpportunities = [];
   const totalHours = completedOpportunities.reduce(
@@ -127,7 +172,7 @@ function Account() {
               <div className="account-info-card mb-5">
                 <h2 className="fw-semibold mb-4">Create Event</h2>
 
-                <form>
+                <form onSubmit={handleCreateEvent}>
                   <div className="row g-4">
                     <div className="col-12 col-md-6">
                       <label className="account-label mb-1 d-block">Event Name</label>
@@ -135,12 +180,17 @@ function Account() {
                         type="text"
                         className="form-control"
                         placeholder="event name..."
+                        value={eventName}
+                        onChange={(e) => setEventName(e.target.value)}
                       />
                     </div>
 
                     <div className="col-12 col-md-6">
                       <label className="account-label mb-1 d-block">Date</label>
-                      <input type="date" className="form-control" />
+                      <input type="date" className="form-control" 
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                      />
                     </div>
 
                     <div className="col-12">
@@ -148,7 +198,8 @@ function Account() {
                       <textarea
                         className="form-control"
                         rows="4"
-                        placeholder="Add a description for your event..."
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                       ></textarea>
                     </div>
 
@@ -159,7 +210,8 @@ function Account() {
                         min="0"
                         step="0.5"
                         className="form-control"
-                        placeholder="0"
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
                       />
                     </div>
 
@@ -169,7 +221,8 @@ function Account() {
                         type="number"
                         min="1"
                         className="form-control"
-                        placeholder="30"
+                        value={maxPeople}
+                        onChange={(e) => setMaxPeople(e.target.value)}
                       />
                     </div>
 
@@ -178,7 +231,8 @@ function Account() {
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="123 St, Gainesville, FL 32611"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
                       />
                     </div>
 
@@ -216,7 +270,8 @@ function Account() {
 
                     <div className="col-12 col-md-6">
                       <label className="account-label mb-1 d-block">Completion Date</label>
-                      <input type="date" className="form-control" />
+                      <input type="date" className="form-control" 
+                      />
                     </div>
 
                     <div className="col-12 col-md-6">
