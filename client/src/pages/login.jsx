@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 
 function Login() {
-  const [isSignup, setIsSignup] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [isSignup, setIsSignup] = useState(Boolean(location.state?.signup));
   const { token, login, signup } = useAuth();
   const [formError, setFormError] = useState("");
 
@@ -16,7 +16,7 @@ function Login() {
     email: "",
     password: "",
     confirmPassword: "",
-    accountType: "volunteer",
+    accountType: location.state?.accountType || "volunteer",
     phone: "",
   });
 
@@ -224,9 +224,9 @@ function Login() {
     <main className="login-page">
       <nav className="navbar bg-white border-bottom">
         <div className="container d-flex justify-content-center">
-          <span className="navbar-brand navbar-name fw-bold m-0">
+          <Link to="/" className="navbar-brand navbar-name fw-bold m-0 text-decoration-none text-reset">
             KindBridge
-          </span>
+          </Link>
         </div>
       </nav>
 

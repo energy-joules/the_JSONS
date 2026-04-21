@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getEvents, searchEventsApi } from "../api/eventsApi";
 
 function formatEventDate(raw) {
@@ -18,12 +18,11 @@ function Search() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  async function handleSearch(event) {
-    event.preventDefault();
+  async function loadEvents(query) {
     setLoading(true);
     setError(null);
     try {
-      const q = searchInput.trim();
+      const q = (query ?? "").trim();
       const data = q ? await searchEventsApi(q) : await getEvents();
       setResults(data);
     } catch (err) {
@@ -31,6 +30,15 @@ function Search() {
     } finally {
       setLoading(false);
     }
+  }
+
+  useEffect(() => {
+    loadEvents("");
+  }, []);
+
+  async function handleSearch(event) {
+    event.preventDefault();
+    await loadEvents(searchInput);
   }
 
   return (

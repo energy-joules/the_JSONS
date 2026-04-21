@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 
 const volunteerSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true
-    },
     password: { // needs to be hashed in the future
         type: String,
         required: true
@@ -46,7 +40,5 @@ const volunteerSchema = new mongoose.Schema({
     }
 
 }, { timestamps: true });
-
-volunteerSchema.index({ username: 1 }, { unique: true });
 
 module.exports = mongoose.model("Volunteer", volunteerSchema);

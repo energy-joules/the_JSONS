@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Home() {
   return (
     <main className="home-page">
@@ -7,19 +9,27 @@ function Home() {
             Find Opportunities Near You!
           </h1>
 
-          <p className="lead mb-4">
+          <p className="lead mb-4 mx-auto text-center" style={{ maxWidth: "760px" }}>
             Use our interactive map to find nearby volunteering opportunities
             or log in as an organization to post openings.
           </p>
 
           <div className="d-flex flex-column flex-sm-row justify-content-center gap-3 mb-5">
-            <button className="btn btn-dark btn-lg px-4">
-              Find Opportunities
-            </button>
+            <Link
+              to="/login"
+              state={{ signup: true, accountType: "volunteer" }}
+              className="btn btn-dark btn-lg px-4"
+            >
+              I’m a Volunteer
+            </Link>
 
-            <button className="btn btn-outline-dark btn-lg px-4">
+            <Link
+              to="/login"
+              state={{ signup: true, accountType: "organization" }}
+              className="btn btn-outline-dark btn-lg px-4"
+            >
               I’m an Organization
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -62,9 +72,9 @@ function Home() {
             Join thousands of volunteers making a difference in their communities.
           </p>
 
-          <button className="btn btn-dark btn-lg px-4">
+          <Link to="/search" className="btn btn-dark btn-lg px-4">
             Explore Opportunities
-          </button>
+          </Link>
         </div>
       </section>
     </main>

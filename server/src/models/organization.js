@@ -27,7 +27,6 @@ const organizationSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
         trim: true
     },
     categories: {
@@ -39,11 +38,9 @@ const organizationSchema = new mongoose.Schema({
     },
     verified: {
         type: Boolean,
-        required: true
+        default: false
     }
 
 }, { timestamps: true });
-
-organizationSchema.index({ username: 1 }, { unique: true });
 
 module.exports = mongoose.model("Organization", organizationSchema);

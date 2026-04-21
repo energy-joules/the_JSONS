@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:9000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export async function getEvents(limit = 50) {
   const res = await fetch(`${API_BASE}/events?limit=${limit}`);
